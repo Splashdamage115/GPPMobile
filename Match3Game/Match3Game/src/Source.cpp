@@ -11,7 +11,11 @@ void Game::init()
 {
 	srand(static_cast<unsigned int>(time(nullptr)));
 
-	m_font.loadFromFile(".\\ASSETS\\FONT\\PixelSans.ttf");
+	m_font.loadFromFile(".\\ASSETS\\FONTS\\PixelSans.ttf");
+	m_scoreText.setFont(m_font);
+	m_scoreText.setPosition(900.f, 400.f);
+	m_score = 0;
+	m_scoreText.setString("Score:" + std::to_string(m_score));
 
 	m_textures[0].loadFromFile(".\\ASSETS\\IMAGES\\Banana.png");
 	m_textures[1].loadFromFile(".\\ASSETS\\IMAGES\\Cherries.png");
@@ -67,10 +71,10 @@ void Game::render()
 		{
 			m_window.draw(m_tiles[x][y].bounds);
 			m_window.draw(m_tiles[x][y].body);
-			m_window.draw(m_scoreText);
 		}
 	}
-
+	m_scoreText.setString("Score:" + std::to_string(m_score));
+	m_window.draw(m_scoreText);
 	m_window.display();
 }
 
