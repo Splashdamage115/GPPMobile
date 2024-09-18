@@ -107,19 +107,23 @@ void Game::events()
 						}
 						else
 						{
-							int newTile = m_tiles[x][y].typeNum;
-							m_tiles[x][y].typeNum = m_tiles[selected % SIZE_X][selected / SIZE_X].typeNum;
-							m_tiles[x][y].body.setTexture(m_textures[m_tiles[x][y].typeNum]);
+							std::cout << selected / SIZE_Y << ", " << selected % SIZE_Y << std::endl;
+
+							{
+								int newTile = m_tiles[x][y].typeNum;
+								m_tiles[x][y].typeNum = m_tiles[selected % SIZE_X][selected / SIZE_X].typeNum;
+								m_tiles[x][y].body.setTexture(m_textures[m_tiles[x][y].typeNum]);
 
 
-							m_tiles[selected % SIZE_X][selected / SIZE_X].typeNum = newTile;
-							m_tiles[selected % SIZE_X][selected / SIZE_X].body.setTexture(m_textures[m_tiles[selected % SIZE_X][selected / SIZE_X].typeNum]);
+								m_tiles[selected % SIZE_X][selected / SIZE_X].typeNum = newTile;
+								m_tiles[selected % SIZE_X][selected / SIZE_X].body.setTexture(m_textures[m_tiles[selected % SIZE_X][selected / SIZE_X].typeNum]);
 
 
-							m_tiles[selected % SIZE_X][selected / SIZE_X].bounds.setOutlineColor(sf::Color::Transparent);
-							m_tiles[x][y].bounds.setOutlineColor(sf::Color::Transparent);
+								m_tiles[selected % SIZE_X][selected / SIZE_X].bounds.setOutlineColor(sf::Color::Transparent);
+								m_tiles[x][y].bounds.setOutlineColor(sf::Color::Transparent);
 
-							selected = -1;
+								selected = -1;
+							}
 						}
 					}
 				}
