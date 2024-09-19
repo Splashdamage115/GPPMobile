@@ -24,6 +24,35 @@ int Reversed(int testNumber)
 {
 	return 0;
 }
+int inputCharToNum()
+{
+	char* input;
+	input = new char();
+	std::cin >> input;
+	int multi = 1;
+	int i = 0;
+	int out = 0;
+	while (input[i] != NULL)
+	{
+		i++;
+	}
+	i--;
+	while (i != -1)
+	{
+		if (input[i] >= 48 && input[i] <= 57)
+		{
+			out += (input[i] - 48) * multi;
+			multi *= 10;
+		}
+		else
+		{
+			return 0;
+		}
+		i--;
+	}
+	return out;
+}
+
 bool isAPalindrome(int testNumber)
 {
 	bool check = true;
@@ -98,7 +127,24 @@ int input5CharsConvertToInt()
 }
 int convertBinarytoDecimal(int binaryNumber)
 {
-	return 0;
+	int i = 1;
+	int digitFactor = 1;
+	int factor = 2;
+	int total = binaryNumber % 10;
+	std::cout << total + 1 << std::endl;
+
+	while (i * digitFactor < binaryNumber)
+	{
+		total += (binaryNumber % (digitFactor)) * factor;
+		factor *= 2;
+		digitFactor *= 10;
+
+		std::cout << total + 1 << std::endl;
+
+		i++;
+	} 
+	total += 1;
+	return total;
 }
 void drawRightAngledTriangle()
 {
@@ -106,11 +152,28 @@ void drawRightAngledTriangle()
 }
 void drawIsocelesTriangle()
 {
-
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 1 + i; j++)
+		{
+			std::cout << "A";
+		}
+		std::cout << std::endl;
+	}
 }
 void drawIsocelesTriangle2()
 {
-
+	int amt = 4;
+	for (int i = 0; i < 8; i++)
+	{
+		if (i == 4)
+			amt = 8;
+		for (int j = 0; j < amt - i; j++)
+		{
+			std::cout << "A";
+		}
+		std::cout << std::endl;
+	}
 }
 
 int find(int size, int arr[], int toFind)

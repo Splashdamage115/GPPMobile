@@ -2,6 +2,13 @@
 // Test for Questions 1 to 8
 int main()
 {
+	//drawIsocelesTriangle();
+	drawIsocelesTriangle2();
+	convertBinarytoDecimal(10);
+
+	std::cout << "Input nums" << std::endl;
+	std::cout << inputCharToNum() << std::endl;
+
 	std::cout << "Leapyear" << std::endl;
 	if (!isLeapYear(1700))
 	{
