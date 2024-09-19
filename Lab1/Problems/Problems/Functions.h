@@ -163,12 +163,14 @@ void drawIsocelesTriangle()
 }
 void drawIsocelesTriangle2()
 {
-	int amt = 4;
-	for (int i = 0; i < 8; i++)
+	int change = 0;
+	for (int i = 0; i < 9; i++)
 	{
-		if (i == 4)
-			amt = 8;
-		for (int j = 0; j < amt - i; j++)
+		if (i > 3)
+			change = 8 - i;
+		else
+			change = i;
+		for (int j = 0; j < 1 + change; j++)
 		{
 			std::cout << "A";
 		}
@@ -207,27 +209,81 @@ int find2ndLargest(int size, int arr[])
 }
 void copyArraytoArray(int size, int arr1[], int arr2[])
 {
-	return;
+	for (int i = 0; i < size; i++)
+	{
+		arr2[i] = arr1[i];
+	}
 }
 bool insertElement(int& size, int& count, int arr[], int elementToInsert, int insertIndex)
 {
+	if (insertIndex > size || insertIndex < 0)
+		return false;
 
-	return false;
+	count = insertIndex;
+	for (int i = insertIndex; i < size; i++)
+	{
+		if (i + 1 < size)
+		{
+			arr[i + 1] = arr[i];
+		}
+		count++;
+	}
+	arr[insertIndex] = elementToInsert;
+	return true;
 }
 bool deleteElement(int& size, int& count, int arr[], int deleteIndex)
 {
+	if (deleteIndex < 0 || deleteIndex > size)
+		return false;
 
+	count = deleteIndex;
+	for (int i = deleteIndex; i < size; i++)
+	{
+		if (i - 1 > 0)
+		{
+			arr[i - 1] = arr[i];
+		}
+		count++;
+	}
 	return true;
 }
 int frequencyCount(int size, int arr[], int value)
 {
+	int count = 0;
 
-	return 0;
+	for (int i = 0; i < size; i++)
+	{
+		if (arr[i] == value)
+			count++;
+	}
+
+	return count;
 }
 int countDuplicates(int size, int arr[])
 {
+	int count = 0;
+	for (int i = 0; i < size; i++)
+	{
+		bool notFound = true;
+		for (int j = i; j > 0; j--)
+		{
+			if (arr[i] == arr[j])
+			{
+				notFound = false;
+				break;
+			}
+		}
+		if (notFound)
+		{
+			for (int j = i; j < size; j++)
+			{
 
-	return 0;
+				if (arr[i] == arr[j])
+					count++;
+			}
+		}
+	}
+	return count;
 }
 void reverse(int size, int arr[])
 {
