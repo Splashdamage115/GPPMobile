@@ -1,3 +1,4 @@
+// David Strikaitis
 #include "functions.h"
 // Test for Questions 1 to 8
 int main()

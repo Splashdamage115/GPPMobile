@@ -1,3 +1,4 @@
+// David Strikaitis
 #pragma once
 #include <iostream>
 
@@ -219,32 +220,31 @@ bool insertElement(int& size, int& count, int arr[], int elementToInsert, int in
 	if (insertIndex > size || insertIndex < 0)
 		return false;
 
-	count = insertIndex;
-	for (int i = insertIndex; i < size; i++)
+	count++;
+
+	for (int i = insertIndex; i < count; i++)
 	{
 		if (i + 1 < size)
 		{
 			arr[i + 1] = arr[i];
 		}
-		count++;
 	}
 	arr[insertIndex] = elementToInsert;
 	return true;
 }
 bool deleteElement(int& size, int& count, int arr[], int deleteIndex)
 {
-	if (deleteIndex < 0 || deleteIndex > size)
+	if (deleteIndex < 0 || deleteIndex > count)
 		return false;
 
-	count = deleteIndex;
-	for (int i = deleteIndex; i < size; i++)
+	for (int i = deleteIndex; i < count; i++)
 	{
 		if (i - 1 > 0)
 		{
 			arr[i - 1] = arr[i];
 		}
-		count++;
 	}
+	count--;
 	return true;
 }
 int frequencyCount(int size, int arr[], int value)
@@ -287,17 +287,47 @@ int countDuplicates(int size, int arr[])
 }
 void reverse(int size, int arr[])
 {
-	return;
+	for (int i = 0; i < size; i++)
+	{
+		int temp = arr[i];
+		arr[i] = arr[size - i];
+		arr[size - i] = temp;
+	}
 }
 int rotateLeft(int size, int arr[])
 {
-	return -1;
+	int first = arr[0];
+	for (int i = 0; i < size - 1; i++)
+	{
+		arr[i] = arr[i + 1];
+	}
+	arr[size - 1] = first;
 }
 bool twoMovies(int flightLength, int movieLengths[], int size)
 {
+	for (int i = 0; i < size; i++)
+	{
+		for (int j = 0; j < size; j++)
+		{
+			if (i == j)
+				continue;
+			if (movieLengths[i] + movieLengths[j] == flightLength)
+			{
+				return true;
+			}
+		}
+	}
 	return false;
 }
 int wordCounter(int size, char characters[])
 {
-	return 0;
+	int words = 1; // start at one word because the last word wont have a space after it
+	for (int i = 0; i < size; i++)
+	{
+		if (characters[i] == ' ')
+		{
+			words++;
+		}
+	}
+	return words;
 }
