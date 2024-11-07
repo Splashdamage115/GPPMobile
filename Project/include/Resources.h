@@ -1,3 +1,4 @@
+// David Strikaitis c00283152
 #ifndef RESOURCES_H
 #define RESOURCES_H
 

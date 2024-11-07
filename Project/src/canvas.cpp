@@ -1,3 +1,4 @@
+// David Strikaitis c00283152
 #include "canvas.h"
 
 Canvas::Canvas() { }
@@ -5,6 +6,8 @@ Canvas::~Canvas() { }
 
 void Canvas::init()
 {
+	m_selectedColour = Colour(255, 255, 255, 255);
+
 	m_topRight.x = 100; m_topRight.y = 100;
 	m_pixelSize = 10;
 	m_canvasSize.x = 32; m_canvasSize.y = 32;
@@ -46,15 +49,69 @@ void Canvas::update()
 		m_mouseStartPos = GetMousePosition();
 	}
 
+	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+	{
+		m_mousePos = GetMousePosition();
 
+		int pos = mousePixel();
+		if (pos != -1) 
+		{
+			// change colour to selected code
+			if (IsKeyDown(KEY_LEFT_ALT))
+			{
+				m_selectedColour = m_pixels.at(pos);
+			}
+			// set colour of pixel
+			else
+			{
+				m_pixels.at(pos) = m_selectedColour;
+				m_pixels.at(pos).active = true;
+			}
+		}
+	}
+
+	if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+	{
+		m_mousePos = GetMousePosition();
+		// get the pixel the mouse is highlighting
+		int pos = mousePixel();
+		if (pos != -1) m_pixels.at(pos).active = false;
+	}
 }
 
 void Canvas::render()
 {
+	int flipBit = 0;
+	float x = 0, y = 0;
+
 	for (unsigned int i = 0; i < m_pixels.size(); i++) 
 	{
-		Color c; c.r = m_pixels.at(i).r; c.g = m_pixels.at(i).g; c.b = m_pixels.at(i).b; c.a = m_pixels.at(i).a;
-		DrawRectangle(m_topRight.x + (i % static_cast<int>(m_canvasSize.x) * m_pixelSize), m_topRight.y + (i / static_cast<int>(m_canvasSize.x) * m_pixelSize), m_pixelSize, m_pixelSize, c);
+		if (i % static_cast<int>(32) == 0) { if (flipBit == 0) flipBit = 1; else flipBit = 0; }
+
+		Color c = m_pixels.at(i).rayColor();
+		x = m_topRight.x + (i % static_cast<int>(m_canvasSize.x) * m_pixelSize);
+		y = m_topRight.y + (i / static_cast<int>(m_canvasSize.x) * m_pixelSize);
+
+		DrawRectangle(x, y, m_pixelSize, m_pixelSize, (i % 2 == flipBit) ? Colour(85, 85, 85, 255).rayColor() : Colour(166, 166, 166, 255).rayColor());
+
+		if(m_pixels.at(i).active)
+			DrawRectangle(x, y, m_pixelSize, m_pixelSize, c);
 	}
+}
+
+int Canvas::mousePixel()
+{
+	for (unsigned int i = 0; i < m_pixels.size(); i++)
+	{
+		float xPos = m_topRight.x + (i % static_cast<int>(m_canvasSize.x) * m_pixelSize);
+		float yPos = m_topRight.y + (i / static_cast<int>(m_canvasSize.x) * m_pixelSize);
+
+		if (m_mousePos.x >= xPos && m_mousePos.x <= xPos + m_pixelSize &&
+			m_mousePos.y >= yPos && m_mousePos.y <= yPos + m_pixelSize)
+		{
+			return i;
+		}
+	}
+	return -1;
 }
 
