@@ -3,6 +3,9 @@
 
 Game::Game()
 {
+	m_canvas = std::make_shared<Canvas>();
+	m_colourPicker = std::make_shared<ColourPicker>();
+	m_colourPicker->setCanvas(m_canvas);
 }
 
 Game::~Game()
@@ -13,16 +16,17 @@ void Game::Init()
 {
 	srand(static_cast<unsigned int>(time(nullptr)));
 
-	m_canvas.init();
+	// initialise window and game
+	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
+	InitWindow(1280, 800, "Pixel Art");
+	SearchAndSetResourceDir("resources");
+
+	m_canvas->init();
+	m_colourPicker->init();
 }
 
 void Game::Run()
 {
-	// initialise window and game
-	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
-	InitWindow(1280, 800, "Array");
-	SearchAndSetResourceDir("resources");
-
 	// game loop
 	while (!WindowShouldClose())
 	{
@@ -40,7 +44,10 @@ void Game::Run()
 
 void Game::Update()
 {
-	m_canvas.update();
+	// avoid overlap clicks
+	if(!m_colourPicker->update())
+		m_canvas->update();
+
 	if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
 	{
 		
@@ -49,5 +56,6 @@ void Game::Update()
 
 void Game::Render()
 {
-	m_canvas.render();
+	m_canvas->render();
+	m_colourPicker->render();
 }

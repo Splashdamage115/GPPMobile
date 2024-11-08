@@ -3,20 +3,7 @@
 #define CANVAS_H
 
 #include "Resources.h"
-
-struct Colour
-{
-	bool active = true;
-	unsigned char r = 0, g = 0, b = 0, a = 0;
-
-	Colour() {}
-	Colour(const Colour& t_rhs){ r = t_rhs.r; g = t_rhs.g; b = t_rhs.b; a = t_rhs.a; }
-	Colour(unsigned char t_r, unsigned char t_g, unsigned char t_b, unsigned char t_a = 255) : r(t_r), g(t_g), b(t_b), a(t_b) { }
-	bool operator==(const Colour& t_rhs) { return (r == t_rhs.r && g == t_rhs.g && b == t_rhs.b && a == t_rhs.a); }
-	void operator=(const Colour& t_rhs) { r = t_rhs.r; g = t_rhs.g; b = t_rhs.b; a = t_rhs.a; }
-	void operator=(const Color& t_rhs) { r = t_rhs.r; g = t_rhs.g; b = t_rhs.b; a = t_rhs.a; } // converting from and to raylib colour
-	Color rayColor() { Color t; t.r = r; t.g = g; t.b = b; t.a = a; return t; }
-};
+#include "Colour.h"
 
 class Canvas
 {

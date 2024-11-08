@@ -260,12 +260,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\canvas.h" />
+    <ClInclude Include="..\..\include\Colour.h" />
+    <ClInclude Include="..\..\include\ColourPicker.h" />
     <ClInclude Include="..\..\include\Game.h" />
     <ClInclude Include="..\..\include\Resources.h" />
     <ClInclude Include="..\..\include\resource_dir.h" />
+    <ClInclude Include="..\..\include\SimpleMaths.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\canvas.cpp" />
+    <ClCompile Include="..\..\src\ColourPicker.cpp" />
     <ClCompile Include="..\..\src\Game.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
   </ItemGroup>

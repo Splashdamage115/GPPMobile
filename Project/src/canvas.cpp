@@ -1,5 +1,6 @@
 // David Strikaitis c00283152
 #include "canvas.h"
+#include "SimpleMaths.h"
 
 Canvas::Canvas() { }
 Canvas::~Canvas() { }
@@ -94,8 +95,7 @@ void Canvas::render()
 
 		DrawRectangle(x, y, m_pixelSize, m_pixelSize, (i % 2 == flipBit) ? Colour(85, 85, 85, 255).rayColor() : Colour(166, 166, 166, 255).rayColor());
 
-		if(m_pixels.at(i).active)
-			DrawRectangle(x, y, m_pixelSize, m_pixelSize, c);
+		if (m_pixels.at(i).active) DrawRectangle(x, y, m_pixelSize, m_pixelSize, c);
 	}
 }
 
@@ -106,8 +106,7 @@ int Canvas::mousePixel()
 		float xPos = m_topRight.x + (i % static_cast<int>(m_canvasSize.x) * m_pixelSize);
 		float yPos = m_topRight.y + (i / static_cast<int>(m_canvasSize.x) * m_pixelSize);
 
-		if (m_mousePos.x >= xPos && m_mousePos.x <= xPos + m_pixelSize &&
-			m_mousePos.y >= yPos && m_mousePos.y <= yPos + m_pixelSize)
+		if(math::coordInBox(m_mousePos.x, m_mousePos.y, xPos, yPos, static_cast<float>(m_pixelSize), static_cast<float>(m_pixelSize)))
 		{
 			return i;
 		}

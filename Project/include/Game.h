@@ -4,6 +4,7 @@
 
 #include "Resources.h"
 #include "canvas.h"
+#include "ColourPicker.h"
 
 class Game
 {
@@ -17,7 +18,8 @@ private:
 	void Update();
 	void Render();
 
-	Canvas m_canvas;
+	std::shared_ptr<Canvas> m_canvas;
+	std::shared_ptr<ColourPicker> m_colourPicker;
 };
 
 #endif // !GAME_H
