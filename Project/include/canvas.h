@@ -16,6 +16,7 @@ public:
 	void render();
 
 	void setSelectedColour(Colour& t_colour) { m_selectedColour = t_colour; }
+	Colour getColour() { return m_selectedColour; }
 private:
 	int mousePixel();
 

@@ -22,40 +22,101 @@ struct HSV
 {
 	bool active = true;
 
-	unsigned short h = 0, s = 0, v = 0, a = 0;
+	unsigned short h = 0, s = 0, v = 0, a = 255;
 
-	void convertColour(Colour& t_c)
-	{
-		float r = t_c.r / 255.f, g = t_c.g / 255.f, b = t_c.b / 255.f;
+	void convertColour(Colour& t_c) {
+		float r = t_c.r / 255.0f;
+		float g = t_c.g / 255.0f;
+		float b = t_c.b / 255.0f;
 
 		float min = math::min(math::min(r, g), b);
 		float max = math::max(math::max(r, g), b);
 
-		h = 0;
-		s = 0;
+		float delta = max - min;
 
-		if (min == max) return; // hue is already set to 0
+		if (delta == 0.0f) {
+			h = 0; 
+			s = 0;
+			v = static_cast<unsigned short>(max * 100.0f);
+			return;
+		}
 
-		float hue = 0.0f;
+		// Hue
+		if (max == r)
+			h = static_cast<unsigned short>(60.0f * fmod(((g - b) / delta), 6.0f));
+		else if (max == g) 
+			h = static_cast<unsigned short>(60.0f * (((b - r) / delta) + 2.0f));
+		else if (max == b)
+			h = static_cast<unsigned short>(60.0f * (((r - g) / delta) + 4.0f));
 
-		if (max == r) hue = (g - b) / (max - min);
-		else if (max == g) hue = 2.0f + (b - r) / (max - min);
-		else hue = 4.0f + (r - g) / (max - min);
 
-		hue = hue * 60;
+		if (h < 0) {
+			h += 360;
+		}
 
-		float value = (max + min) / 2.f;
-		// chroma / (1 - Math.abs(2 * L - 1));
-		float x = std::abs(2 * value - 1);
-		float saturation = (max - min) / (1 - x);
+		s = static_cast<unsigned short>((max == 0) ? 0 : (delta / max) * 100.0f); // dont calculate if zero (error)
+		v = static_cast<unsigned short>(max * 100.0f); // change to percent
+	}
 
-		if (hue < 0) hue += 360; // ensure that the value is on the unit circle (360 degrees)
-		saturation = saturation * 100.f; // percent conversion
-		value = value * 100.f; // percent conversion
 
-		h = static_cast<unsigned short>(hue);
-		s = static_cast<unsigned short>(saturation);
-		v = static_cast<unsigned short>(value);
+	Colour toColour() {
+		float hh, p, q, t, ff;
+		long i;
+		float r, g, b;
+		float s = this->s / 100.0f;
+		float v = this->v / 100.0f;
+		if (s <= 0.0)
+		{
+			// < is incorrect, just in case
+			r = v;
+			g = v;
+			b = v;
+			return Colour(r * 255, g * 255, b * 255, this->a);
+		}
+		hh = this->h;
+		if (hh >= 360.0) hh = 0.0;
+		hh /= 60.0;
+		i = (long)hh;
+		ff = hh - i;
+		p = v * (1.0 - s);
+		q = v * (1.0 - (s * ff));
+		t = v * (1.0 - (s * (1.0 - ff)));
+		switch (i)
+		{
+		case 0:
+			r = v;
+			g = t;
+			b = p;
+			break;
+		case 1:
+			r = q;
+			g = v;
+			b = p;
+			break;
+		case 2:
+			r = p;
+			g = v;
+			b = t;
+			break;
+		case 3:
+			r = p;
+			g = q;
+			b = v;
+			break;
+		case 4:
+			r = t;
+			g = p;
+			b = v;
+			break;
+		case 5:
+		default:
+			r = v;
+			g = p;
+			b = q;
+			break;
+		}
+		return Colour(r * 255, g * 255, b * 255, this->a);
+
 	}
 };
 

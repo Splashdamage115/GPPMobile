@@ -28,8 +28,21 @@ private:
 	std::vector<Colour> m_colours;
 	int highlightedBox = 0;
 	int selectedBox = 0;
-	Image highlightImage;
 	Texture2D highlightTexture;
+
+	Texture2D circleTexture;
+	Vector2 circlePos;
+	float circleRad;
+
+	Texture2D selectedCircle;
+	Vector2 selectedPosWheel;
+
+	Texture2D darkness;
+	Vector2 darknessPos;
+	float darknessWidth;
+
+	Vector2 currentColourPos;
+	Vector2 currentColourSize;
 };
 
 #endif // !COLOURPICKER_H

@@ -25,8 +25,20 @@ void ColourPicker::init()
 
 	highlightTexture = LoadTexture("highlight.png");
 
-	HSV x;
-	x.convertColour(Colour(200, 200, 20));
+	circlePos.x = m_canvasStartPos.x + 120; circlePos.y = m_canvasStartPos.y + 600;
+	circleRad = 100.f;
+	circleTexture = LoadTexture("hsv.png");
+
+	selectedCircle = LoadTexture("Selector.png");
+
+	darkness = LoadTexture("BWramp.png");
+	darknessWidth = 200.f;
+	darknessPos.x = m_canvasStartPos.x + 20; darknessPos.y = m_canvasStartPos.y + 720;
+
+	currentColourPos.x = m_canvasStartPos.x + 20; currentColourPos.y = m_canvasStartPos.y + 440;
+	currentColourSize.x = 200; currentColourSize.y = 40;
+
+
 }
 
 // bool used to check clicks inside the menu, this is in case the canvas is behind this menu to avoid overlap
@@ -51,9 +63,21 @@ bool ColourPicker::update()
 					m_canvas->setSelectedColour(m_colours.at(i));
 				}
 				break;
+				return true;
 			}
 		}
+		if (math::coordInCircle(m_mousePos, circlePos, circleRad))
+		{
+			if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+				HSV selected;
+				selected.s = (math::distance(m_mousePos, circlePos) / circleRad) * 100.f; // convert it to a percentage
+				selected.h = math::displacementToDegrees(math::displacement(circlePos, m_mousePos));
+				selected.v = 100.0f;
+				m_canvas->setSelectedColour(selected.toColour());
 
+				selectedPosWheel = m_mousePos;
+			}
+		}
 		return true;
 	}
 	return false;
@@ -84,4 +108,11 @@ void ColourPicker::render()
 			DrawTexture(highlightTexture, highlightPos.x, highlightPos.y, WHITE);
 		}
 	}
+
+	DrawRectangleV(currentColourPos, currentColourSize, m_canvas->getColour().rayColor());
+
+	DrawTexture(circleTexture, circlePos.x - circleRad, circlePos.y - circleRad, WHITE);
+	DrawTexture(selectedCircle, selectedPosWheel.x - 5.f, selectedPosWheel.y - 5.f, WHITE);
+
+	DrawTexture(darkness, darknessPos.x, darknessPos.y, WHITE);
 }
