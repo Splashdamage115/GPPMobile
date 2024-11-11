@@ -24,6 +24,8 @@ private:
 	float colourBoxSize;
 	float offsetBetweenBoxes;
 	int maxWidth;
+	int maxHeight;
+	int startDrawH = 0;
 
 	std::vector<Colour> m_colours;
 	int highlightedBox = 0;
@@ -43,6 +45,13 @@ private:
 
 	Vector2 currentColourPos;
 	Vector2 currentColourSize;
+
+	Texture2D darknessSelection;
+	Vector2 BWpos;
+
+	Texture2D addTexture;
+	Vector2 addPos;
+	bool drawAdd = false;
 };
 
 #endif // !COLOURPICKER_H
