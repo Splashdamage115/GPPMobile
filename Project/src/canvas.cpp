@@ -1,6 +1,7 @@
 // David Strikaitis c00283152
 #include "canvas.h"
 #include "SimpleMaths.h"
+#include "StbImageWrite.h"
 
 Canvas::Canvas() { }
 Canvas::~Canvas() { }
@@ -24,14 +25,13 @@ void Canvas::init()
 
 void Canvas::update()
 {
-	if (GetMouseWheelMove() > 0)
-	{
-		m_pixelSize++;
-	}
-	else if (GetMouseWheelMove() < 0)
-	{
-		m_pixelSize--;
-	}
+	m_mousePos = GetMousePosition();
+
+	// scroll canvas in / out
+	if (GetMouseWheelMove() > 0) { m_pixelSize++; }
+	else if (GetMouseWheelMove() < 0) { m_pixelSize--; }
+	// scroll in / out
+
 	// moving the canvas around
 	if (IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE))
 	{
@@ -39,8 +39,6 @@ void Canvas::update()
 	}
 	if (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))
 	{
-		m_mousePos = GetMousePosition();
-
 		Vector2 newPos; newPos.x = m_mouseStartPos.x - m_mousePos.x; newPos.y = m_mouseStartPos.y - m_mousePos.y;
 
 		m_mouseStartPos = newPos;
@@ -49,11 +47,10 @@ void Canvas::update()
 		m_topRight.x = m_topRight.x - newPos.x; m_topRight.y = m_topRight.y - newPos.y;
 		m_mouseStartPos = GetMousePosition();
 	}
+	// !moving canvas
 
 	if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 	{
-		m_mousePos = GetMousePosition();
-
 		int pos = mousePixel();
 		if (pos != -1) 
 		{
@@ -65,18 +62,22 @@ void Canvas::update()
 			// set colour of pixel
 			else
 			{
-				m_pixels.at(pos) = m_selectedColour;
-				m_pixels.at(pos).active = true;
+				if (m_currentTool == ToolSelected::Brush)
+					drawPixel();
+				if (m_currentTool == ToolSelected::Eraser)
+					erasePixel();
+				if (m_currentTool == ToolSelected::Selector)
+					m_selectedColour = m_pixels.at(pos);
 			}
 		}
 	}
 
 	if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
 	{
-		m_mousePos = GetMousePosition();
-		// get the pixel the mouse is highlighting
-		int pos = mousePixel();
-		if (pos != -1) m_pixels.at(pos).active = false;
+		if (m_currentTool == ToolSelected::Brush)
+			erasePixel();
+		if (m_currentTool == ToolSelected::Eraser)
+			drawPixel();
 	}
 }
 
@@ -114,3 +115,57 @@ int Canvas::mousePixel()
 	return -1;
 }
 
+void Canvas::drawPixel()
+{
+	int pos = mousePixel();
+
+	m_pixels.at(pos) = m_selectedColour;
+	m_pixels.at(pos).active = true;
+}
+
+void Canvas::erasePixel()
+{
+	int pos = mousePixel();
+	if (pos != -1) 
+	{
+		m_pixels.at(pos).active = false;
+		m_pixels.at(pos) = Colour(255, 255, 255, 0);
+	}
+
+}
+
+void Canvas::saveCurrent()
+{
+	// int stbi_write_png(char const* filename, int w, int h, int comp, const void* data, int stride_in_bytes);
+
+	uint8_t image_data[32 * 32 * 4];
+
+	for (int i = 0; i < m_pixels.size(); i++) {
+		image_data[i * 4 + 0] = m_pixels.at(i).r;// Red 
+		image_data[i * 4 + 1] = m_pixels.at(i).g;// Green 
+		image_data[i * 4 + 2] = m_pixels.at(i).b;// Blue
+		image_data[i * 4 + 3] = m_pixels.at(i).a;// alpha
+	}
+	stbi_write_png("output.png", 32, 32, 4, image_data, sizeof(uint8_t) * 4 * 32);
+}
+
+void Canvas::load()
+{
+	Image image = LoadImage("output.png");
+	if (image.data == NULL)
+	{ 
+		std::cout << "couldnt find image" << std::endl;
+		return;
+	}
+
+	uint8_t* pixelData = (uint8_t*)image.data;
+
+	for (int i = 0; i < image.width * image.height; ++i) 
+	{ 
+		m_pixels[i].r = pixelData[i * 4 + 0];
+		m_pixels[i].g = pixelData[i * 4 + 1];
+		m_pixels[i].b = pixelData[i * 4 + 2];
+		m_pixels[i].a = pixelData[i * 4 + 3];
+	}
+	UnloadImage(image);
+}

@@ -6,6 +6,8 @@ Game::Game()
 	m_canvas = std::make_shared<Canvas>();
 	m_colourPicker = std::make_shared<ColourPicker>();
 	m_colourPicker->setCanvas(m_canvas);
+	m_toolBar = std::make_shared<ToolBar>();
+	m_toolBar->setCanvas(m_canvas);
 }
 
 Game::~Game()
@@ -23,6 +25,7 @@ void Game::Init()
 
 	m_canvas->init();
 	m_colourPicker->init();
+	m_toolBar->init();
 }
 
 void Game::Run()
@@ -45,17 +48,18 @@ void Game::Run()
 void Game::Update()
 {
 	// avoid overlap clicks
-	if(!m_colourPicker->update())
-		m_canvas->update();
-
-	if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+	if (!m_colourPicker->update())
 	{
-		
+		if (!m_toolBar->update())
+		{
+			m_canvas->update();
+		}
 	}
 }
 
 void Game::Render()
 {
 	m_canvas->render();
+	m_toolBar->render();
 	m_colourPicker->render();
 }

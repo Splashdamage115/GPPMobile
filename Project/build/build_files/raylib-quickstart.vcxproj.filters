@@ -33,6 +33,15 @@
     <ClInclude Include="..\..\include\SimpleMaths.h">
       <Filter>Header Files\Globals</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\toolBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\StbImage.h">
+      <Filter>Header Files\Globals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\StbImageWrite.h">
+      <Filter>Header Files\Globals</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\main.cpp">
@@ -45,6 +54,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ColourPicker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\toolBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

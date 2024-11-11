@@ -266,12 +266,16 @@
     <ClInclude Include="..\..\include\Resources.h" />
     <ClInclude Include="..\..\include\resource_dir.h" />
     <ClInclude Include="..\..\include\SimpleMaths.h" />
+    <ClInclude Include="..\..\include\StbImage.h" />
+    <ClInclude Include="..\..\include\StbImageWrite.h" />
+    <ClInclude Include="..\..\include\toolBar.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\canvas.cpp" />
     <ClCompile Include="..\..\src\ColourPicker.cpp" />
     <ClCompile Include="..\..\src\Game.cpp" />
     <ClCompile Include="..\..\src\main.cpp" />
+    <ClCompile Include="..\..\src\toolBar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="raylib.vcxproj">

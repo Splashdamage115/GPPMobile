@@ -5,6 +5,11 @@
 #include "Resources.h"
 #include "Colour.h"
 
+enum class ToolSelected
+{
+	Brush, Eraser, Selector
+};
+
 class Canvas
 {
 public:
@@ -17,8 +22,16 @@ public:
 
 	void setSelectedColour(Colour& t_colour) { m_selectedColour = t_colour; }
 	Colour getColour() { return m_selectedColour; }
+
+	void setTool(ToolSelected t_tool) { m_currentTool = t_tool; }
+
+	void saveCurrent();
+	void load();
 private:
 	int mousePixel();
+
+	void drawPixel();
+	void erasePixel();
 
 	std::vector<Colour> m_pixels;
 	Vector2 m_topRight;
@@ -31,6 +44,8 @@ private:
 	float m_mouseSpeedFactor = 1.f;
 
 	Colour m_selectedColour;
+
+	ToolSelected m_currentTool;
 };
 
 

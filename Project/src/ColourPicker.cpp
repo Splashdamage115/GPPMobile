@@ -40,6 +40,8 @@ void ColourPicker::init()
 
 	addPos.x = currentColourPos.x + currentColourSize.x - 34.f; addPos.y = currentColourPos.y + (currentColourSize.y / 2.f) - 16.f;
 	addTexture = LoadTexture("AddButton.png");
+
+	selectedPosWheel = circlePos;
 }
 
 // bool used to check clicks inside the menu, this is in case the canvas is behind this menu to avoid overlap
