@@ -7,7 +7,7 @@
 
 enum class ToolSelected
 {
-	Brush, Eraser, Selector
+	Brush, Eraser, Selector, BoxDraw
 };
 
 class Canvas
@@ -29,9 +29,15 @@ public:
 	void load();
 private:
 	int mousePixel();
+	int mousePixel(Vector2 t_mouse);
 
 	void drawPixel();
 	void erasePixel();
+
+	void drawBox(bool m_select);
+
+	Vector2 startSelect;
+	bool selecting = false;
 
 	std::vector<Colour> m_pixels;
 	Vector2 m_topRight;

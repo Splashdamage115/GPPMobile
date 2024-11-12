@@ -72,12 +72,111 @@ void Canvas::update()
 		}
 	}
 
+	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+	{
+		if (m_currentTool == ToolSelected::BoxDraw)
+		{
+			int selected = mousePixel();
+			float xPos = selected % static_cast<int>(m_canvasSize.x);
+			float yPos = selected / static_cast<int>(m_canvasSize.x);
+
+			startSelect.x = xPos; startSelect.y = yPos;
+
+			selecting = true;
+		}
+	}
+
 	if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
 	{
 		if (m_currentTool == ToolSelected::Brush)
 			erasePixel();
 		if (m_currentTool == ToolSelected::Eraser)
 			drawPixel();
+	}
+	if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+	{
+		if (m_currentTool == ToolSelected::BoxDraw)
+		{
+			// FILL IN ALL BITS BETWEEN M_MOUSEPOS AND MOUSE START
+			int selected = mousePixel();
+			float xPos = selected % static_cast<int>(m_canvasSize.x);
+			float yPos = selected / static_cast<int>(m_canvasSize.x);
+
+			int startX = math::min(startSelect.x, xPos);
+			int endX = math::max(xPos, startSelect.x);
+
+			for (int x = startX; x <= endX; x++)
+			{
+				if (x + (m_canvasSize.y * startSelect.y) >= 0 && x + (m_canvasSize.y * startSelect.y) < m_pixels.size()) {
+					m_pixels.at(x + (m_canvasSize.y * startSelect.y)) = m_selectedColour; m_pixels.at(x + (m_canvasSize.y * startSelect.y)).active = true;
+				}
+				if (x + (m_canvasSize.y * yPos) >= 0 && x + (m_canvasSize.y * yPos) < m_pixels.size()) {
+					m_pixels.at(x + (m_canvasSize.y * yPos)) = m_selectedColour; m_pixels.at(x + (m_canvasSize.y * yPos)).active = true;
+				}
+			}
+
+			int startY = math::min(startSelect.y, yPos);
+			int endY = math::max(yPos, startSelect.y);
+
+			for (int y = startY; y <= endY; y++)
+			{
+				if (y * m_canvasSize.x + startX >= 0 && y * m_canvasSize.x + startX < m_pixels.size()) {
+					m_pixels.at(y * m_canvasSize.x + startX) = m_selectedColour; m_pixels.at(y * m_canvasSize.x + startX).active = true;
+				}
+				if (y * m_canvasSize.x + endX >= 0 && y * m_canvasSize.x + endX < m_pixels.size()) {
+					m_pixels.at(y * m_canvasSize.x + endX) = m_selectedColour; m_pixels.at(y * m_canvasSize.x + endX).active = true;
+				}
+			}
+
+			selecting = false;
+		}
+	}
+
+}
+
+void Canvas::drawBox(bool m_select)
+{
+	int selected = mousePixel();
+	float xPos = selected % static_cast<int>(m_canvasSize.x);
+	float yPos = selected / static_cast<int>(m_canvasSize.x);
+
+	int startX = math::min(startSelect.x, xPos);
+	int endX = math::max(xPos, startSelect.x);
+
+	float xP = 0.f, yP = 0.f;
+	int i = 0;
+
+	for (int x = startX; x <= endX; x++)
+	{
+		i = x + (m_canvasSize.y * startSelect.y);
+		xP = m_topRight.x + (i % static_cast<int>(m_canvasSize.x) * m_pixelSize);
+		yP = m_topRight.y + (i / static_cast<int>(m_canvasSize.x) * m_pixelSize);
+
+		DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, m_selectedColour.rayColor());
+
+		i = x + (m_canvasSize.y * yPos);
+		xP = m_topRight.x + (i % static_cast<int>(m_canvasSize.x) * m_pixelSize);
+		yP = m_topRight.y + (i / static_cast<int>(m_canvasSize.x) * m_pixelSize);
+
+		DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, m_selectedColour.rayColor());
+	}
+
+	int startY = math::min(startSelect.y, yPos);
+	int endY = math::max(yPos, startSelect.y);
+
+	for (int y = startY; y <= endY; y++)
+	{
+		i = y * m_canvasSize.x + startX;
+		xP = m_topRight.x + (i % static_cast<int>(m_canvasSize.x) * m_pixelSize);
+		yP = m_topRight.y + (i / static_cast<int>(m_canvasSize.x) * m_pixelSize);
+
+		DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, m_selectedColour.rayColor());
+
+		i = y * m_canvasSize.x + endX;
+		xP = m_topRight.x + (i % static_cast<int>(m_canvasSize.x) * m_pixelSize);
+		yP = m_topRight.y + (i / static_cast<int>(m_canvasSize.x) * m_pixelSize);
+
+		DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, m_selectedColour.rayColor());
 	}
 }
 
@@ -98,6 +197,14 @@ void Canvas::render()
 
 		if (m_pixels.at(i).active) DrawRectangle(x, y, m_pixelSize, m_pixelSize, c);
 	}
+
+	if (selecting)
+	{
+		if (m_currentTool == ToolSelected::BoxDraw)
+		{
+			drawBox(false);
+		}
+	}
 }
 
 int Canvas::mousePixel()
@@ -108,6 +215,21 @@ int Canvas::mousePixel()
 		float yPos = m_topRight.y + (i / static_cast<int>(m_canvasSize.x) * m_pixelSize);
 
 		if(math::coordInBox(m_mousePos.x, m_mousePos.y, xPos, yPos, static_cast<float>(m_pixelSize), static_cast<float>(m_pixelSize)))
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+int Canvas::mousePixel(Vector2 t_mouse)
+{
+	for (unsigned int i = 0; i < m_pixels.size(); i++)
+	{
+		float xPos = m_topRight.x + (i % static_cast<int>(m_canvasSize.x) * m_pixelSize);
+		float yPos = m_topRight.y + (i / static_cast<int>(m_canvasSize.x) * m_pixelSize);
+
+		if (math::coordInBox(t_mouse.x, t_mouse.y, xPos, yPos, static_cast<float>(m_pixelSize), static_cast<float>(m_pixelSize)))
 		{
 			return i;
 		}
@@ -157,6 +279,8 @@ void Canvas::load()
 		std::cout << "couldnt find image" << std::endl;
 		return;
 	}
+
+	m_pixels.resize(image.width * image.height);
 
 	uint8_t* pixelData = (uint8_t*)image.data;
 

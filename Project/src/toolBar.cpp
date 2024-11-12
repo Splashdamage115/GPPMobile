@@ -13,9 +13,10 @@ void ToolBar::init()
 	brush.init("brush.png", 16.f, 16.f, 32.f, 32.f);
 	eraser.init("eraser.png", 16.f, 64.f, 32.f, 32.f);
 	selector.init("colourSelector.png", 16.f, 112.f, 32.f, 32.f);
-	boxSelect.init("boxSelect.png", 16.f, 160.f, 32.f, 32.f);
-	load.init("load.png", 16.f, 208.f, 32.f, 32.f);
-	save.init("save.png", 16.f, 256.f, 32.f, 32.f);
+	boxDraw.init("boxDraw.png", 16.f, 160.f, 32.f, 32.f);
+	boxSelect.init("boxSelect.png", 16.f, 208.f, 32.f, 32.f);
+	load.init("load.png", 16.f, 256.f, 32.f, 32.f);
+	save.init("save.png", 16.f, 304.f, 32.f, 32.f);
 
 	highlightTexture = LoadTexture("highlight.png");
 	selectedToolPos = brush.pos;
@@ -42,6 +43,11 @@ bool ToolBar::update()
 			m_canvas->setTool(ToolSelected::Selector);
 			selectedToolPos = selector.pos;
 		}
+		if (boxDraw.pressed(m_mousePos))
+		{
+			m_canvas->setTool(ToolSelected::BoxDraw);
+			selectedToolPos = boxDraw.pos;
+		}
 		if (save.pressed(m_mousePos))
 		{
 			m_canvas->saveCurrent();
@@ -66,6 +72,7 @@ void ToolBar::render()
 	brush.render();
 	eraser.render();
 	selector.render();
+	boxDraw.render();
 	boxSelect.render();
 	load.render();
 	save.render();

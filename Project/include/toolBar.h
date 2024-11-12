@@ -45,7 +45,7 @@ private:
 	Vector2 selectedToolPos;
 	Texture2D highlightTexture;
 
-	Button brush, eraser, save, load, boxSelect, selector;
+	Button brush, eraser, save, load, boxSelect, selector, boxDraw;
 };
 
 #endif // !TOOL_BAR_H
