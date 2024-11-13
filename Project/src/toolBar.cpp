@@ -58,7 +58,8 @@ bool ToolBar::update()
 		}
 		if (boxSelect.pressed(m_mousePos))
 		{
-
+			m_canvas->setTool(ToolSelected::boxSelect);
+			selectedToolPos = boxSelect.pos;
 		}
 		return true;
 	}

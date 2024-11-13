@@ -41,8 +41,6 @@ void Canvas::update()
 	{
 		Vector2 newPos; newPos.x = m_mouseStartPos.x - m_mousePos.x; newPos.y = m_mouseStartPos.y - m_mousePos.y;
 
-		m_mouseStartPos = newPos;
-
 		newPos.x *= m_mouseSpeedFactor; newPos.y *= m_mouseSpeedFactor;
 		m_topRight.x = m_topRight.x - newPos.x; m_topRight.y = m_topRight.y - newPos.y;
 		m_mouseStartPos = GetMousePosition();
@@ -81,6 +79,18 @@ void Canvas::update()
 			float yPos = selected / static_cast<int>(m_canvasSize.x);
 
 			startSelect.x = xPos; startSelect.y = yPos;
+
+			selecting = true;
+		}
+		if (m_currentTool == ToolSelected::boxSelect)
+		{
+			int selected = mousePixel();
+			float xPos = selected % static_cast<int>(m_canvasSize.x);
+			float yPos = selected / static_cast<int>(m_canvasSize.x);
+
+			startSelect.x = xPos; startSelect.y = yPos;
+
+			selectedPixels.clear();
 
 			selecting = true;
 		}
@@ -130,8 +140,101 @@ void Canvas::update()
 
 			selecting = false;
 		}
-	}
 
+		if (m_currentTool == ToolSelected::boxSelect)
+		{
+			int selected = mousePixel();
+			float xPos = selected % static_cast<int>(m_canvasSize.x);
+			float yPos = selected / static_cast<int>(m_canvasSize.x);
+
+			int startX = math::min(startSelect.x, xPos);
+			int endX = math::max(xPos, startSelect.x);
+			int startY = math::min(startSelect.y, yPos);
+			int endY = math::max(yPos, startSelect.y);
+
+			for (int x = startX; x <= endX; x++)
+			{
+				for (int y = startY; y <= endY; y++)
+				{
+					if (x + (y * m_canvasSize.y) < m_pixels.size() && x + (y * m_canvasSize.y) >= 0){
+						selectedPixels.push_back(m_pixels.at(x + (y * m_canvasSize.y)));
+					}
+				}
+			}
+			selectedSize.x = endX - startX; selectedSize.y = endY - startY;
+			topLeft.x = startX; topLeft.y = startY;
+
+			selecting = false;
+			m_currentTool = ToolSelected::boxDrag;
+		}
+	}
+	if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyReleased(KEY_C))
+	{
+		if (selectedPixels.size() > 0)
+		{
+			copiedPixels.clear();
+			for (int i = 0; i < selectedPixels.size(); i++)
+				copiedPixels.push_back(selectedPixels.at(i));
+			copiedSize = selectedSize;
+		}
+	}
+	if (m_currentTool == ToolSelected::boxDrag)
+	{
+		if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+			m_mouseStartPos = GetMousePosition();
+
+		if (IsKeyReleased(KEY_ENTER))
+		{
+			{
+				int increment = 0;
+				m_currentTool = ToolSelected::Brush;
+
+				for (int x = topLeft.x; x <= copiedSize.x + topLeft.x; x++)
+				{
+					for (int y = topLeft.y; y <= copiedSize.y + topLeft.y; y++)
+					{
+						if (copiedPixels.at(increment).active && copiedPixels.at(increment).a > 0)
+							m_pixels.at(x + (y * m_canvasSize.y)) = copiedPixels.at(increment);
+						increment++;
+						if (increment >= copiedPixels.size()) return;
+					}
+				}
+			}
+		}
+
+		if (IsKeyReleased(KEY_LEFT))
+		{
+			topLeft.x--;
+		}
+		if (IsKeyReleased(KEY_RIGHT))
+		{
+			topLeft.x++;
+		}
+		if (IsKeyReleased(KEY_UP))
+		{
+			topLeft.y--;
+		}
+		if (IsKeyReleased(KEY_DOWN))
+		{
+			topLeft.y++;
+		}
+	}
+	if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyReleased(KEY_V))
+	{
+		int increment = 0;
+		m_currentTool = ToolSelected::Brush;
+
+		for (int x = topLeft.x; x <= copiedSize.x + topLeft.x; x++)
+		{
+			for (int y = topLeft.y; y <= copiedSize.y + topLeft.y; y++)
+			{
+				if (copiedPixels.at(increment).active && copiedPixels.at(increment).a > 0)
+					m_pixels.at(x + (y * m_canvasSize.y)) = copiedPixels.at(increment);
+				increment++;
+				if (increment >= copiedPixels.size()) return;
+			}
+		}
+	}
 }
 
 void Canvas::drawBox(bool m_select)
@@ -152,13 +255,19 @@ void Canvas::drawBox(bool m_select)
 		xP = m_topRight.x + (i % static_cast<int>(m_canvasSize.x) * m_pixelSize);
 		yP = m_topRight.y + (i / static_cast<int>(m_canvasSize.x) * m_pixelSize);
 
-		DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, m_selectedColour.rayColor());
+		if(!m_select)
+			DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, m_selectedColour.rayColor());
+		else
+			DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, Colour(255,255,255,80).rayColor());
 
 		i = x + (m_canvasSize.y * yPos);
 		xP = m_topRight.x + (i % static_cast<int>(m_canvasSize.x) * m_pixelSize);
 		yP = m_topRight.y + (i / static_cast<int>(m_canvasSize.x) * m_pixelSize);
 
-		DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, m_selectedColour.rayColor());
+		if (!m_select)
+			DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, m_selectedColour.rayColor());
+		else
+			DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, Colour(255, 255, 255, 80).rayColor());
 	}
 
 	int startY = math::min(startSelect.y, yPos);
@@ -170,15 +279,37 @@ void Canvas::drawBox(bool m_select)
 		xP = m_topRight.x + (i % static_cast<int>(m_canvasSize.x) * m_pixelSize);
 		yP = m_topRight.y + (i / static_cast<int>(m_canvasSize.x) * m_pixelSize);
 
-		DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, m_selectedColour.rayColor());
+		if (!m_select)
+			DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, m_selectedColour.rayColor());
+		else
+			DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, Colour(255, 255, 255, 80).rayColor());
 
 		i = y * m_canvasSize.x + endX;
 		xP = m_topRight.x + (i % static_cast<int>(m_canvasSize.x) * m_pixelSize);
 		yP = m_topRight.y + (i / static_cast<int>(m_canvasSize.x) * m_pixelSize);
 
-		DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, m_selectedColour.rayColor());
+		if (!m_select)
+			DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, m_selectedColour.rayColor());
+		else
+			DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, Colour(255, 255, 255, 80).rayColor());
 	}
 }
+
+void Canvas::drawOverlay()
+{
+	for (int x = topLeft.x; x <= selectedSize.x + topLeft.x; x++)
+	{
+		for (int y = topLeft.y; y <= selectedSize.y + topLeft.y; y++)
+		{
+			int i = x + (y * static_cast<int>(m_canvasSize.x));
+			float xP = m_topRight.x + x * m_pixelSize;
+			float yP = m_topRight.y + y * m_pixelSize;
+			DrawRectangle(xP, yP, m_pixelSize, m_pixelSize, Colour(255,255,255,80).rayColor());
+		}
+	}
+}
+
+
 
 void Canvas::render()
 {
@@ -204,7 +335,13 @@ void Canvas::render()
 		{
 			drawBox(false);
 		}
+		if (m_currentTool == ToolSelected::boxSelect)
+		{
+			drawBox(true);
+		}
 	}
+	if(m_currentTool == ToolSelected::boxDrag)
+		drawOverlay();
 }
 
 int Canvas::mousePixel()

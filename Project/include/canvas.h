@@ -7,7 +7,7 @@
 
 enum class ToolSelected
 {
-	Brush, Eraser, Selector, BoxDraw
+	Brush, Eraser, Selector, BoxDraw, boxSelect, boxDrag
 };
 
 class Canvas
@@ -35,6 +35,7 @@ private:
 	void erasePixel();
 
 	void drawBox(bool m_select);
+	void drawOverlay();
 
 	Vector2 startSelect;
 	bool selecting = false;
@@ -52,6 +53,12 @@ private:
 	Colour m_selectedColour;
 
 	ToolSelected m_currentTool;
+
+	std::vector<Colour> selectedPixels;
+	Vector2 selectedSize;
+	std::vector<Colour> copiedPixels;
+	Vector2 copiedSize;
+	Vector2 topLeft;
 };
 
 
