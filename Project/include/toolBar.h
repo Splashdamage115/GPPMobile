@@ -46,6 +46,8 @@ private:
 	Texture2D highlightTexture;
 
 	Button brush, eraser, save, load, boxSelect, selector, boxDraw;
+
+	bool showMessageBox = false;
 };
 
 #endif // !TOOL_BAR_H

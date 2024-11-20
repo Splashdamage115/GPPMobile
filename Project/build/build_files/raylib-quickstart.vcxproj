@@ -263,6 +263,7 @@
     <ClInclude Include="..\..\include\Colour.h" />
     <ClInclude Include="..\..\include\ColourPicker.h" />
     <ClInclude Include="..\..\include\Game.h" />
+    <ClInclude Include="..\..\include\rayGui.h" />
     <ClInclude Include="..\..\include\Resources.h" />
     <ClInclude Include="..\..\include\resource_dir.h" />
     <ClInclude Include="..\..\include\SimpleMaths.h" />

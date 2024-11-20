@@ -1,6 +1,7 @@
 // David Strikaitis c00283152
 #include "Game.h"
 
+
 Game::Game()
 {
 	m_canvas = std::make_shared<Canvas>();

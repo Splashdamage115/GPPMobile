@@ -1,5 +1,7 @@
 #include "toolBar.h"
 #include "SimpleMaths.h"
+#define RAYGUI_IMPLEMENTATION
+#include "rayGui.h"
 
 ToolBar::ToolBar() { }
 
@@ -50,6 +52,7 @@ bool ToolBar::update()
 		}
 		if (save.pressed(m_mousePos))
 		{
+			showMessageBox = true;
 			m_canvas->saveCurrent();
 		}
 		if (load.pressed(m_mousePos))
@@ -69,6 +72,16 @@ bool ToolBar::update()
 void ToolBar::render()
 {
 	DrawRectangleV(m_canvasStartPos, m_canvasSize, Colour(104, 144, 151, 255).rayColor());
+
+	if (showMessageBox)
+	{
+		Rectangle bound = { 85, 70, 250, 100 };
+		int result = GuiMessageBox(bound,
+			"#191#Message Box", "Image Saved into output.png", "ok");
+
+		if (result >= 0) showMessageBox = false;
+	}
+
 
 	brush.render();
 	eraser.render();
